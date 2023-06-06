@@ -3,6 +3,7 @@
 
 #include "qwaylanddisplay_p.h"
 
+#include "qwaylandappmenu_p.h"
 #include "qwaylandintegration_p.h"
 #include "qwaylandwindow_p.h"
 #include "qwaylandsurface_p.h"
@@ -783,6 +784,9 @@ void QWaylandDisplay::registry_global(uint32_t id, const QString &interface, uin
                 new QWaylandWindowManagerIntegration(this, id, version));
     } else if (interface == QLatin1String(QtWayland::xdg_system_bell_v1::interface()->name)) {
         mGlobals.systemBell.reset(new WithDestructor<QtWayland::xdg_system_bell_v1, xdg_system_bell_v1_destroy>(registry, id, 1));
+    } else if (
+            interface == QLatin1String(QtWayland::org_kde_kwin_appmenu_manager::interface()->name)) {
+        mGlobals.appMenuManager.reset(new QWaylandAppMenuManager(registry, id, 1));
     }
 
     mRegistryGlobals.append(RegistryGlobal(id, interface, version, registry));

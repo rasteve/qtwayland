@@ -26,6 +26,7 @@ qt_internal_add_module(WaylandClient
         inputdeviceintegration/qwaylandinputdeviceintegrationplugin.cpp inputdeviceintegration/qwaylandinputdeviceintegrationplugin_p.h
         qtwaylandclientglobal.h qtwaylandclientglobal_p.h
         qwaylandabstractdecoration.cpp qwaylandabstractdecoration_p.h
+        qwaylandappmenu.cpp qwaylandappmenu_p.h
         qwaylandbuffer.cpp qwaylandbuffer_p.h
         qwaylanddecorationfactory.cpp qwaylanddecorationfactory_p.h
         qwaylanddecorationplugin.cpp qwaylanddecorationplugin_p.h
@@ -96,6 +97,7 @@ qt_internal_add_module(WaylandClient
 qt6_generate_wayland_protocol_client_sources(WaylandClient
     PRIVATE_CODE
     FILES
+        ${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/protocol/appmenu/appmenu.xml
         ${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/protocol/cursor-shape/cursor-shape-v1.xml
         ${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/protocol/pointer-gestures/pointer-gestures-unstable-v1.xml
         ${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/protocol/tablet/tablet-unstable-v2.xml

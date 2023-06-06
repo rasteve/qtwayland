@@ -63,6 +63,7 @@ namespace QtWaylandClient {
 
 QT_DECLARE_EXPORTED_QT_LOGGING_CATEGORY(lcQpaWayland, Q_WAYLANDCLIENT_EXPORT);
 
+class QWaylandAppMenuManager;
 class QWaylandInputDevice;
 class QWaylandBuffer;
 class QWaylandScreen;
@@ -211,7 +212,10 @@ public:
     {
         return mGlobals.systemBell.get();
     }
-
+    QWaylandAppMenuManager *appMenuManager() const
+    {
+        return mGlobals.appMenuManager.get();
+    }
 
     struct RegistryGlobal {
         uint32_t id;
@@ -345,7 +349,9 @@ private:
         std::unique_ptr<QtWayland::xdg_system_bell_v1> systemBell;
         std::unique_ptr<QtWayland::xdg_toplevel_drag_manager_v1> xdgToplevelDragManager;
         std::unique_ptr<QWaylandWindowManagerIntegration> windowManagerIntegration;
+        std::unique_ptr<QWaylandAppMenuManager> appMenuManager;
     } mGlobals;
+
     int mFd = -1;
     int mWritableNotificationFd = -1;
     QList<RegistryGlobal> mRegistryGlobals;
