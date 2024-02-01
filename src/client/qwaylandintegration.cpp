@@ -125,7 +125,7 @@ bool QWaylandIntegration::hasCapability(QPlatformIntegration::Capability cap) co
     case RasterGLSurface:
         return true;
     case WindowActivation:
-        return false;
+        return true;
     case ScreenWindowGrabbing: // whether QScreen::grabWindow() is supported
         return false;
     default: return QPlatformIntegration::hasCapability(cap);
