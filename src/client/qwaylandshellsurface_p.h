@@ -90,6 +90,8 @@ public:
     virtual void attachPopup(QWaylandShellSurface *popup) { Q_UNUSED(popup); }
     virtual void detachPopup(QWaylandShellSurface *popup) { Q_UNUSED(popup); }
 
+    virtual void setIcon(const QIcon &icon) { Q_UNUSED(icon); }
+
 protected:
     void resizeFromApplyConfigure(const QSize &sizeWithMargins, const QPoint &offset = {0, 0});
     void repositionFromApplyConfigure(const QPoint &position);

@@ -61,6 +61,8 @@ QWaylandWindow::QWaylandWindow(QWindow *window, QWaylandDisplay *display)
 
     initializeWlSurface();
 
+    setWindowIcon(window->icon());
+
     connect(this, &QWaylandWindow::wlSurfaceCreated, this,
             &QNativeInterface::Private::QWaylandWindow::surfaceCreated);
     connect(this, &QWaylandWindow::wlSurfaceDestroyed, this,
@@ -146,6 +148,7 @@ void QWaylandWindow::initWindow()
 
             // Set initial surface title
             setWindowTitle(window()->title());
+            mShellSurface->setIcon(mWindowIcon);
 
             // The appId is the desktop entry identifier that should follow the
             // reverse DNS convention (see
@@ -405,6 +408,8 @@ void QWaylandWindow::setWindowIcon(const QIcon &icon)
 
     if (mWindowDecorationEnabled && window()->isVisible())
         mWindowDecoration->update();
+    if (mShellSurface)
+        mShellSurface->setIcon(icon);
 }
 
 QRect QWaylandWindow::defaultGeometry() const

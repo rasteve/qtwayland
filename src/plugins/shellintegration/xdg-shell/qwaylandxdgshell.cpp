@@ -7,6 +7,7 @@
 
 #include "qwaylandxdgexporterv2_p.h"
 #include "qwaylandxdgdialogv1_p.h"
+#include "qwaylandxdgtopleveliconv1_p.h"
 
 #include <QtWaylandClient/private/qwaylanddisplay_p.h>
 #include <QtWaylandClient/private/qwaylandwindow_p.h>
@@ -780,6 +781,14 @@ std::unique_ptr<QWaylandXdgSurface::Positioner> QWaylandXdgSurface::createPositi
 }
 
 
+void QWaylandXdgSurface::setIcon(const QIcon &icon)
+{
+    if (!m_shell->m_topLevelIconManager || !m_toplevel)
+        return;
+
+    m_shell->m_topLevelIconManager->setIcon(icon, m_toplevel->object());
+}
+
 QWaylandXdgShell::QWaylandXdgShell(QWaylandDisplay *display, QtWayland::xdg_wm_base *xdgWmBase)
     : m_display(display), m_xdgWmBase(xdgWmBase)
 {
@@ -808,6 +817,10 @@ void QWaylandXdgShell::handleRegistryGlobal(void *data, wl_registry *registry, u
 
     if (interface == QLatin1String(QWaylandXdgDialogWmV1::interface()->name)) {
         xdgShell->m_xdgDialogWm.reset(new QWaylandXdgDialogWmV1(registry, id, version));
+    }
+    if (interface == QLatin1String(QtWayland::xdg_toplevel_icon_manager_v1::interface()->name)) {
+        xdgShell->m_topLevelIconManager.reset(
+                new QWaylandXdgToplevelIconManagerV1(xdgShell->m_display, registry, id, version));
     }
 }
 
