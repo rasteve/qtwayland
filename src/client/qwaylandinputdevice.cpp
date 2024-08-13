@@ -1,4 +1,5 @@
 // Copyright (C) 2016 The Qt Company Ltd.
+// Copyright (C) 2024 Jie Liu <liujie01@kylinos.cn>
 // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
 
 #include "qwaylandinputdevice_p.h"
@@ -11,6 +12,9 @@
 #if QT_CONFIG(wayland_datadevice)
 #include "qwaylanddatadevice_p.h"
 #include "qwaylanddatadevicemanager_p.h"
+#endif
+#if QT_CONFIG(clipboard)
+#include "qwaylanddatacontrolv1_p.h"
 #endif
 #if QT_CONFIG(wayland_client_primary_selection)
 #include "qwaylandprimaryselectionv1_p.h"
@@ -316,6 +320,13 @@ QWaylandInputDevice::QWaylandInputDevice(QWaylandDisplay *display, int version, 
     , mDisplay(display->wl_display())
     , mId(id)
 {
+
+#if QT_CONFIG(clipboard)
+    if (auto *dataControlManager = mQDisplay->dataControlManager()) {
+        setDataControlDevice(dataControlManager->createDevice(this));
+    }
+#endif
+
 #if QT_CONFIG(wayland_datadevice)
     if (mQDisplay->dndSelectionHandler()) {
         mDataDevice = mQDisplay->dndSelectionHandler()->getDataDevice(this);
@@ -482,6 +493,18 @@ void QWaylandInputDevice::setDataDevice(QWaylandDataDevice *device)
 QWaylandDataDevice *QWaylandInputDevice::dataDevice() const
 {
     return mDataDevice;
+}
+#endif
+
+#if QT_CONFIG(clipboard)
+void QWaylandInputDevice::setDataControlDevice(QWaylandDataControlDeviceV1 *dataControlDevice)
+{
+    mDataControlDevice.reset(dataControlDevice);
+}
+
+QWaylandDataControlDeviceV1 *QWaylandInputDevice::dataControlDevice() const
+{
+    return mDataControlDevice.data();
 }
 #endif
 

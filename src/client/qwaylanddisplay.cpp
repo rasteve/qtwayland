@@ -1,4 +1,5 @@
 // Copyright (C) 2016 The Qt Company Ltd.
+// Copyright (C) 2024 Jie Liu <liujie01@kylinos.cn>
 // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
 
 #include "qwaylanddisplay_p.h"
@@ -13,6 +14,7 @@
 #include "qwaylandinputdevice_p.h"
 #if QT_CONFIG(clipboard)
 #include "qwaylandclipboard_p.h"
+#include "qwaylanddatacontrolv1_p.h"
 #endif
 #if QT_CONFIG(wayland_datadevice)
 #include "qwaylanddatadevicemanager_p.h"
@@ -53,6 +55,7 @@
 #include <QtWaylandClient/private/qwayland-cursor-shape-v1.h>
 #include <QtWaylandClient/private/qwayland-xdg-system-bell-v1.h>
 #include <QtWaylandClient/private/qwayland-xdg-toplevel-drag-v1.h>
+#include <QtWaylandClient/private/qwayland-wlr-data-control-unstable-v1.h>
 
 #include <QtCore/private/qcore_unix_p.h>
 
@@ -329,6 +332,7 @@ QWaylandDisplay::QWaylandDisplay(QWaylandIntegration *waylandIntegration)
     }
 
     mWaylandTryReconnect = qEnvironmentVariableIsSet("QT_WAYLAND_RECONNECT");
+    mPreferWlrDataControl = qEnvironmentVariableIntValue("QT_WAYLAND_USE_DATA_CONTROL") > 0;
 }
 
 void QWaylandDisplay::setupConnection()
@@ -787,6 +791,13 @@ void QWaylandDisplay::registry_global(uint32_t id, const QString &interface, uin
     } else if (
             interface == QLatin1String(QtWayland::org_kde_kwin_appmenu_manager::interface()->name)) {
         mGlobals.appMenuManager.reset(new QWaylandAppMenuManager(registry, id, 1));
+#if QT_CONFIG(clipboard)
+    } else if (mPreferWlrDataControl && interface == QLatin1String(QWaylandDataControlManagerV1::interface()->name)) {
+        mGlobals.dataControlManager.reset(new QWaylandDataControlManagerV1(this, id, 2));
+        for (QWaylandInputDevice *inputDevice : std::as_const(mInputDevices)) {
+            inputDevice->setDataControlDevice(mGlobals.dataControlManager->createDevice(inputDevice));
+        }
+#endif
     }
 
     mRegistryGlobals.append(RegistryGlobal(id, interface, version, registry));
@@ -850,6 +861,13 @@ void QWaylandDisplay::registry_global_remove(uint32_t id)
                 mGlobals.primarySelectionManager.reset();
                 for (QWaylandInputDevice *inputDevice : std::as_const(mInputDevices))
                     inputDevice->setPrimarySelectionDevice(nullptr);
+            }
+#endif
+#if QT_CONFIG(clipboard)
+            if (global.interface == QLatin1String(QtWayland::zwlr_data_control_manager_v1::interface()->name)) {
+                mGlobals.dataControlManager.reset();
+                for (QWaylandInputDevice *inputDevice : std::as_const(mInputDevices))
+                    inputDevice->setDataControlDevice(nullptr);
             }
 #endif
             emit globalRemoved(mRegistryGlobals.takeAt(i));

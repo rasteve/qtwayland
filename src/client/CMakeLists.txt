@@ -28,6 +28,7 @@ qt_internal_add_module(WaylandClient
         qwaylandabstractdecoration.cpp qwaylandabstractdecoration_p.h
         qwaylandappmenu.cpp qwaylandappmenu_p.h
         qwaylandbuffer.cpp qwaylandbuffer_p.h
+        qwaylanddatacontrolv1.cpp qwaylanddatacontrolv1_p.h
         qwaylanddecorationfactory.cpp qwaylanddecorationfactory_p.h
         qwaylanddecorationplugin.cpp qwaylanddecorationplugin_p.h
         qwaylanddisplay.cpp qwaylanddisplay_p.h
@@ -92,6 +93,7 @@ qt_internal_add_module(WaylandClient
         ../3rdparty/protocol/fractional-scale
         ../3rdparty/protocol/viewporter
         ../3rdparty/protocol/xdg-shell
+        ../3rdparty/protocol/wlr-data-control
 )
 
 qt6_generate_wayland_protocol_client_sources(WaylandClient
@@ -109,6 +111,7 @@ qt6_generate_wayland_protocol_client_sources(WaylandClient
         ${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/protocol/xdg-output/xdg-output-unstable-v1.xml
         ${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/protocol/fractional-scale/fractional-scale-v1.xml
         ${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/protocol/viewporter/viewporter.xml
+        ${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/protocol/wlr-data-control/wlr-data-control-unstable-v1.xml
         ${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/protocol/xdg-shell/xdg-shell.xml
         ${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/protocol/xdg-system-bell/xdg-system-bell-v1.xml
         ${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/protocol/xdg-toplevel-drag/xdg-toplevel-drag-v1.xml

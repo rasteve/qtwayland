@@ -1,4 +1,5 @@
 // Copyright (C) 2016 The Qt Company Ltd.
+// Copyright (C) 2024 Jie Liu <liujie01@kylinos.cn>
 // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
 
 #ifndef QWAYLANDDISPLAY_H
@@ -71,6 +72,9 @@ class QWaylandXdgOutputManagerV1;
 class QWaylandClientBufferIntegration;
 class QWaylandWindowManagerIntegration;
 class QWaylandDataDeviceManager;
+#if QT_CONFIG(clipboard)
+class QWaylandDataControlManagerV1;
+#endif
 #if QT_CONFIG(wayland_client_primary_selection)
 class QWaylandPrimarySelectionDeviceManagerV1;
 #endif
@@ -146,6 +150,12 @@ public:
     QWaylandDataDeviceManager *dndSelectionHandler() const
     {
         return mGlobals.dndSelectionHandler.get();
+    }
+#endif
+#if QT_CONFIG(clipboard)
+    QWaylandDataControlManagerV1 *dataControlManager() const
+    {
+        return mGlobals.dataControlManager.get();
     }
 #endif
 #if QT_CONFIG(wayland_client_primary_selection)
@@ -334,6 +344,9 @@ private:
         std::unique_ptr<QWaylandTabletManagerV2> tabletManager;
 #endif
         std::unique_ptr<QWaylandPointerGestures> pointerGestures;
+#if QT_CONFIG(clipboard)
+        std::unique_ptr<QWaylandDataControlManagerV1> dataControlManager;
+#endif
 #if QT_CONFIG(wayland_client_primary_selection)
         std::unique_ptr<QWaylandPrimarySelectionDeviceManagerV1> primarySelectionManager;
 #endif
@@ -363,6 +376,7 @@ private:
     struct wl_callback *mSyncCallback = nullptr;
     static const wl_callback_listener syncCallbackListener;
     bool mWaylandTryReconnect = false;
+    bool mPreferWlrDataControl = false;
 
     bool mWaylandInputContextRequested = [] () {
         const auto requested = QPlatformInputContextFactory::requested();
