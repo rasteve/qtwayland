@@ -340,9 +340,6 @@ bool QWaylandGLContext::makeCurrent(QPlatformSurface *surface)
         return true;
     }
 
-    if (m_currentWindow->isExposed())
-        m_currentWindow->setCanResize(false);
-
     if (eglSurface == EGL_NO_SURFACE) {
         m_currentWindow->updateSurface(true);
         eglSurface = m_currentWindow->eglSurface();
@@ -350,7 +347,6 @@ bool QWaylandGLContext::makeCurrent(QPlatformSurface *surface)
 
     if (!eglMakeCurrent(eglDisplay(), eglSurface, eglSurface, eglContext())) {
         qWarning("QWaylandGLContext::makeCurrent: eglError: %#x, this: %p \n", eglGetError(), this);
-        m_currentWindow->setCanResize(true);
         return false;
     }
 
@@ -403,8 +399,6 @@ void QWaylandGLContext::swapBuffers(QPlatformSurface *surface)
     window->handleUpdate();
     if (!eglSwapBuffers(eglDisplay(), eglSurface))
         qCWarning(lcQpaWayland, "eglSwapBuffers failed with %#x, surface: %p", eglGetError(), eglSurface);
-
-    window->setCanResize(true);
 }
 
 GLuint QWaylandGLContext::defaultFramebufferObject(QPlatformSurface *surface) const

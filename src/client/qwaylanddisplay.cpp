@@ -503,6 +503,7 @@ void QWaylandDisplay::reconnect()
 void QWaylandDisplay::flushRequests()
 {
     m_eventThread->readAndDispatchEvents();
+    QWindowSystemInterface::flushWindowSystemEvents();
 }
 
 // We have to wait until we have an eventDispatcher before creating the eventThread,

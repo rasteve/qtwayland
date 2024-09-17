@@ -193,9 +193,6 @@ public:
 
     QWaylandWindow *transientParent() const;
 
-    void doApplyConfigure();
-    void setCanResize(bool canResize);
-
     bool setMouseGrabEnabled(bool grab) override;
     static QWaylandWindow *mouseGrab() { return mMouseGrab; }
 
@@ -309,9 +306,7 @@ protected:
     bool mWaitingForUpdate = false;
     bool mExposed = false;
 
-    QRecursiveMutex mResizeLock;
     bool mWaitingToApplyConfigure = false;
-    bool mCanResize = true;
     bool mResizeDirty = false;
     bool mResizeAfterSwap;
     int mFrameCallbackTimeout = 100;
@@ -343,9 +338,6 @@ protected:
     QList<QPointer<QWaylandWindow>> mChildPopups;
 
     Qt::ScreenOrientation mLastReportedContentOrientation = Qt::PrimaryOrientation;
-
-private Q_SLOTS:
-    void doApplyConfigureFromOtherThread();
 
 private:
     void setGeometry_helper(const QRect &rect);

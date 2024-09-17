@@ -31,6 +31,8 @@ void QWaylandQtSurface::resetConfiguration()
 
 void QWaylandQtSurface::applyConfigure()
 {
+    ack_configure(m_currentConfigureSerial);
+
     if (m_pendingSize.isValid() && m_pendingPositionValid)
         setGeometryFromApplyConfigure(m_pendingPosition, m_pendingSize);
     else if (m_pendingSize.isValid())
@@ -42,8 +44,6 @@ void QWaylandQtSurface::applyConfigure()
         QWindowSystemInterface::handleWindowStateChanged(platformWindow()->window(), m_pendingStates);
         m_currentStates = m_pendingStates;
     }
-
-    ack_configure(m_currentConfigureSerial);
 
     resetConfiguration();
     m_currentConfigureSerial = UINT32_MAX;

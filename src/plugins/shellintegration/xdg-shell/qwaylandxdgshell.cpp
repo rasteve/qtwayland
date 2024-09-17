@@ -413,14 +413,15 @@ void QWaylandXdgSurface::applyConfigure()
     if (m_pendingConfigureSerial == m_appliedConfigureSerial)
         return;
 
-    if (m_toplevel)
-        m_toplevel->applyConfigure();
-    if (m_popup)
-        m_popup->applyConfigure();
     m_appliedConfigureSerial = m_pendingConfigureSerial;
 
     m_configured = true;
     ack_configure(m_appliedConfigureSerial);
+
+    if (m_toplevel)
+        m_toplevel->applyConfigure();
+    if (m_popup)
+        m_popup->applyConfigure();
 
     window()->updateExposure();
 }

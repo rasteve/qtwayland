@@ -335,7 +335,6 @@ void QWaylandWindow::resetSurfaceRole()
     }
     mFrameCallbackTimedOut = false;
     mWaitingToApplyConfigure = false;
-    mCanResize = true;
     mResizeDirty = false;
     mExposed = false;
 }
@@ -452,27 +451,27 @@ void QWaylandWindow::setGeometry(const QRect &r)
         }
     }
 
-    if (window()->isVisible() && rect.isValid()) {
-        if (mWindowDecorationEnabled)
-            mWindowDecoration->update();
-
-        if (mResizeAfterSwap && windowType() == Egl && mSentInitialResize) {
-            QMutexLocker lock(&mResizeLock);
-            mResizeDirty = true;
-        } else {
-            QWindowSystemInterface::handleGeometryChange(window(), geometry());
-        }
-        mSentInitialResize = true;
-    }
-    QRect exposeGeometry(QPoint(), geometry().size());
-    if (isExposed() && !mInResizeFromApplyConfigure && exposeGeometry != mLastExposeGeometry)
-        sendExposeEvent(exposeGeometry);
-
     if (mShellSurface)
         mShellSurface->setContentGeometry(windowContentGeometry());
 
     if (isOpaque() && mMask.isEmpty())
         setOpaqueArea(QRect(QPoint(0, 0), rect.size()));
+
+
+    if (window()->isVisible() && rect.isValid()) {
+        ensureSize();
+        if (mWindowDecorationEnabled)
+            mWindowDecoration->update();
+
+        if (mResizeAfterSwap && windowType() == Egl && mSentInitialResize) {
+            mResizeDirty = true;
+        }
+        QWindowSystemInterface::handleGeometryChange<QWindowSystemInterface::SynchronousDelivery>(window(), geometry());
+        mSentInitialResize = true;
+    }
+    QRect exposeGeometry(QPoint(), geometry().size());
+    if (isExposed() && !mInResizeFromApplyConfigure && exposeGeometry != mLastExposeGeometry)
+        sendExposeEvent(exposeGeometry);
 }
 
 void QWaylandWindow::updateInputRegion()
@@ -549,8 +548,8 @@ void QWaylandWindow::resizeFromApplyConfigure(const QSize &sizeWithMargins, cons
 void QWaylandWindow::sendExposeEvent(const QRect &rect)
 {
     if (!(mShellSurface && mShellSurface->handleExpose(rect))) {
-        QWindowSystemInterface::handleExposeEvent(window(), rect);
         mLastExposeGeometry = rect;
+        QWindowSystemInterface::handleExposeEvent(window(), rect);
     }
     else
         qCDebug(lcQpaWayland) << "sendExposeEvent: intercepted by shell extension, not sending";
@@ -645,67 +644,26 @@ bool QWaylandWindow::isAlertState() const
 
 void QWaylandWindow::applyConfigureWhenPossible()
 {
-    QMutexLocker resizeLocker(&mResizeLock);
     if (!mWaitingToApplyConfigure) {
         mWaitingToApplyConfigure = true;
         QMetaObject::invokeMethod(this, "applyConfigure", Qt::QueuedConnection);
     }
 }
 
-void QWaylandWindow::doApplyConfigure()
+void QWaylandWindow::applyConfigure()
 {
     if (!mWaitingToApplyConfigure)
         return;
 
     Q_ASSERT_X(QThread::currentThreadId() == QThreadData::get2(thread())->threadId.loadRelaxed(),
-               "QWaylandWindow::doApplyConfigure", "not called from main thread");
+               "QWaylandWindow::applyConfigure", "not called from main thread");
 
     if (mShellSurface)
         mShellSurface->applyConfigure();
 
     mWaitingToApplyConfigure = false;
-
-    sendExposeEvent(QRect(QPoint(), geometry().size()));
-}
-
-void QWaylandWindow::doApplyConfigureFromOtherThread()
-{
-    QMutexLocker lock(&mResizeLock);
-    if (!mCanResize || !mWaitingToApplyConfigure)
-        return;
-    doApplyConfigure();
-}
-
-void QWaylandWindow::setCanResize(bool canResize)
-{
-    QMutexLocker lock(&mResizeLock);
-    mCanResize = canResize;
-
-    if (canResize) {
-        if (mResizeDirty) {
-            QWindowSystemInterface::handleGeometryChange(window(), geometry());
-        }
-        if (mWaitingToApplyConfigure) {
-            bool inGuiThread = QThread::currentThreadId() == QThreadData::get2(thread())->threadId.loadRelaxed();
-            if (inGuiThread) {
-                doApplyConfigure();
-            } else {
-                QMetaObject::invokeMethod(this, &QWaylandWindow::doApplyConfigureFromOtherThread, Qt::QueuedConnection);
-            }
-        } else if (mResizeDirty) {
-            mResizeDirty = false;
-        }
-    }
-}
-
-void QWaylandWindow::applyConfigure()
-{
-    QMutexLocker lock(&mResizeLock);
-
-    if (mCanResize || !mSentInitialResize)
-        doApplyConfigure();
-
-    lock.unlock();
+    QRect exposeGeometry(QPoint(), geometry().size());
+    sendExposeEvent(exposeGeometry);
     QWindowSystemInterface::flushWindowSystemEvents();
 }
 
@@ -1488,7 +1446,6 @@ void QWaylandWindow::setScale(qreal newScale)
         return;
     mScale = newScale;
 
-    QWindowSystemInterface::handleWindowDevicePixelRatioChanged(window());
     if (mSurface) {
         if (mViewport)
             updateViewport();
@@ -1497,6 +1454,7 @@ void QWaylandWindow::setScale(qreal newScale)
     }
     ensureSize();
 
+    QWindowSystemInterface::handleWindowDevicePixelRatioChanged<QWindowSystemInterface::SynchronousDelivery>(window());
     if (isExposed()) {
         // redraw at the new DPR
         window()->requestUpdate();

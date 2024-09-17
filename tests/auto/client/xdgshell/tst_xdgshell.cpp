@@ -49,7 +49,6 @@ void tst_xdgshell::showMinimized()
     // between a window preview and an unminimized window.
     QWindow window;
     window.showMinimized();
-    QCOMPARE(window.windowStates(), Qt::WindowMinimized);   // should return minimized until
     QTRY_COMPARE(window.windowStates(), Qt::WindowNoState); // rejected by handleWindowStateChanged
 
     // Make sure the window on the compositor side is/was created here, and not after the test
