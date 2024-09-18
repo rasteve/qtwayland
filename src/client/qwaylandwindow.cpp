@@ -276,11 +276,13 @@ bool QWaylandWindow::shouldCreateSubSurface() const
 void QWaylandWindow::beginFrame()
 {
     mSurfaceLock.lockForRead();
+    mInFrameRender = true;
 }
 
 void QWaylandWindow::endFrame()
 {
     mSurfaceLock.unlock();
+    mInFrameRender = false;
 }
 
 void QWaylandWindow::reset()
@@ -335,6 +337,7 @@ void QWaylandWindow::resetSurfaceRole()
         killTimer(mFrameCallbackCheckIntervalTimerId);
         mFrameCallbackCheckIntervalTimerId = -1;
     }
+    mInFrameRender = false;
     mFrameCallbackTimedOut = false;
     mWaitingToApplyConfigure = false;
     mExposed = false;
@@ -659,6 +662,12 @@ void QWaylandWindow::applyConfigure()
     Q_ASSERT_X(QThread::currentThreadId() == QThreadData::get2(thread())->threadId.loadRelaxed(),
                "QWaylandWindow::applyConfigure", "not called from main thread");
 
+    // If we're mid paint, use an exposeEvent to flush the current frame.
+    // When this completes we know that no other frames will be rendering.
+    // This could be improved in future as we 're blocking for not just the frame to finish but one additional extra frame.
+    if (mInFrameRender)
+        QWindowSystemInterface::handleExposeEvent<QWindowSystemInterface::SynchronousDelivery>(window(), QRect(QPoint(0, 0), geometry().size()));
+    Q_ASSERT(!mInFrameRender);
     if (mShellSurface)
         mShellSurface->applyConfigure();
 
@@ -720,6 +729,11 @@ void QWaylandWindow::safeCommit(QWaylandBuffer *buffer, const QRegion &damage)
     } else {
         buffer->setBusy(false);
     }
+}
+
+bool QWaylandWindow::allowsIndependentThreadedRendering() const
+{
+    return !mWaitingToApplyConfigure;
 }
 
 void QWaylandWindow::commit(QWaylandBuffer *buffer, const QRegion &damage)

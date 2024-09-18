@@ -100,6 +100,9 @@ public:
     void setWindowIcon(const QIcon &icon) override;
 
     void setGeometry(const QRect &rect) override;
+
+    bool allowsIndependentThreadedRendering() const override;
+
     void resizeFromApplyConfigure(const QSize &sizeWithMargins, const QPoint &offset = {0, 0});
     void repositionFromApplyConfigure(const QPoint &position);
     void setGeometryFromApplyConfigure(const QPoint &globalPosition, const QSize &sizeWithMargins);
@@ -307,7 +310,11 @@ protected:
     bool mWaitingForUpdate = false;
     bool mExposed = false;
 
-    bool mWaitingToApplyConfigure = false;
+    // written from the main thread, read by the render thread
+    std::atomic_bool mWaitingToApplyConfigure = false;
+    // written from the render thread, read by the main thread
+    std::atomic_bool mInFrameRender = false;
+
     int mFrameCallbackTimeout = 100;
     QVariantMap m_properties;
 
