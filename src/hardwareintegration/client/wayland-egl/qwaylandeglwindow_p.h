@@ -44,8 +44,6 @@ public:
     GLuint contentTexture() const;
     bool needToUpdateContentFBO() const { return decoration() && (m_resize || !m_contentFBO); }
 
-    QSurfaceFormat format() const override;
-
     void bindContentFBO();
 
     void invalidateSurface() override;
@@ -62,7 +60,6 @@ private:
     mutable bool m_resize = false;
     mutable QOpenGLFramebufferObject *m_contentFBO = nullptr;
 
-    QSurfaceFormat m_format;
     // Size used in the last call to wl_egl_window_resize
     QSize m_requestedSize;
 

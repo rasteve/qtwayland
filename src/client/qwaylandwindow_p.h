@@ -60,6 +60,8 @@ class QWaylandPointerGesturePinchEvent;
 class QWaylandSurface;
 class QWaylandFractionalScale;
 class QWaylandViewport;
+class ColorManagementSurface;
+class ImageDescription;
 
 class Q_WAYLANDCLIENT_EXPORT QWaylandWindow : public QNativeInterface::Private::QWaylandWindow,
                                               public QPlatformWindow
@@ -246,6 +248,8 @@ public:
 
     bool windowEvent(QEvent *event) override;
 
+    QSurfaceFormat format() const override;
+
 public Q_SLOTS:
     void applyConfigure();
 
@@ -256,6 +260,7 @@ Q_SIGNALS:
 protected:
     virtual void doHandleFrameCallback();
     virtual QRect defaultGeometry() const;
+    void setFormat(const QSurfaceFormat &format);
 
     // this should be called directly for buffer size changes only
     // use updateExposure for anything affecting the on/off state
@@ -345,6 +350,9 @@ protected:
 
     Qt::ScreenOrientation mLastReportedContentOrientation = Qt::PrimaryOrientation;
 
+    std::unique_ptr<ColorManagementSurface> mColorManagementSurface;
+    QSurfaceFormat mSurfaceFormat;
+
 private:
     void setGeometry_helper(const QRect &rect);
     void initWindow();
@@ -357,6 +365,7 @@ private:
     void updateInputRegion();
     void updateViewport();
     bool calculateExposure() const;
+    void setPendingImageDescription();
 
     void handleMouseEventWithDecoration(QWaylandInputDevice *inputDevice, const QWaylandPointerEvent &e);
     void handleScreensChanged();
@@ -370,6 +379,7 @@ private:
     bool mInResizeFromApplyConfigure = false;
     bool lastVisible = false;
     QRect mLastExposeGeometry;
+    std::unique_ptr<ImageDescription> mPendingImageDescription;
 
     static const wl_callback_listener callbackListener;
     void handleFrameCallback(struct ::wl_callback* callback);

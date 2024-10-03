@@ -92,6 +92,7 @@ class QWaylandShellIntegration;
 class QWaylandCursor;
 class QWaylandCursorTheme;
 class EventThread;
+class ColorManager;
 
 typedef void (*RegistryListener)(void *data,
                                  struct wl_registry *registry,
@@ -225,6 +226,10 @@ public:
     QWaylandAppMenuManager *appMenuManager() const
     {
         return mGlobals.appMenuManager.get();
+    }
+    ColorManager *colorManager() const
+    {
+        return mGlobals.colorManager.get();
     }
 
     struct RegistryGlobal {
@@ -363,6 +368,7 @@ private:
         std::unique_ptr<QtWayland::xdg_toplevel_drag_manager_v1> xdgToplevelDragManager;
         std::unique_ptr<QWaylandWindowManagerIntegration> windowManagerIntegration;
         std::unique_ptr<QWaylandAppMenuManager> appMenuManager;
+        std::unique_ptr<ColorManager> colorManager;
     } mGlobals;
 
     int mFd = -1;

@@ -19,6 +19,7 @@
 #include "qwaylandshmbackingstore_p.h"
 #include "qwaylandshellintegration_p.h"
 #include "qwaylandviewport_p.h"
+#include "qwaylandcolormanagement_p.h"
 
 #include <QtCore/QFileInfo>
 #include <QtCore/QPointer>
@@ -213,6 +214,11 @@ void QWaylandWindow::initWindow()
     mSurface->commit();
 }
 
+void QWaylandWindow::setPendingImageDescription()
+{
+    mColorManagementSurface->setImageDescription(mPendingImageDescription.get());
+}
+
 void QWaylandWindow::initializeWlSurface()
 {
     Q_ASSERT(!mSurface);
@@ -240,6 +246,27 @@ void QWaylandWindow::initializeWlSurface()
     if (display()->viewporter() && display()->fractionalScaleManager()) {
         mViewport.reset(new QWaylandViewport(display()->createViewport(this)));
     }
+
+    QColorSpace requestedColorSpace = window()->requestedFormat().colorSpace();
+    if (requestedColorSpace != QColorSpace{} && mDisplay->colorManager()) {
+        // TODO try a similar (same primaries + supported transfer function) color space if this fails?
+        mPendingImageDescription = mDisplay->colorManager()->createImageDescription(requestedColorSpace);
+        if (mPendingImageDescription) {
+            if (!mColorManagementSurface)
+                mColorManagementSurface = std::make_unique<ColorManagementSurface>(mDisplay->colorManager()->get_surface(surface()));
+            connect(mPendingImageDescription.get(), &ImageDescription::ready, this, &QWaylandWindow::setPendingImageDescription, Qt::SingleShotConnection);
+            mSurfaceFormat.setColorSpace(requestedColorSpace);
+        } else {
+            qCWarning(lcQpaWayland) << "couldn't create image description for requested color space" << requestedColorSpace;
+        }
+    }
+}
+
+void QWaylandWindow::setFormat(const QSurfaceFormat &format)
+{
+    const auto colorSpace = mSurfaceFormat.colorSpace();
+    mSurfaceFormat = format;
+    mSurfaceFormat.setColorSpace(colorSpace);
 }
 
 void QWaylandWindow::setShellIntegration(QWaylandShellIntegration *shellIntegration)
@@ -297,6 +324,8 @@ void QWaylandWindow::reset()
             mSurface.reset();
             mViewport.reset();
             mFractionalScale.reset();
+            mColorManagementSurface.reset();
+            mPendingImageDescription.reset();
         }
         emit wlSurfaceDestroyed();
     }
@@ -1849,6 +1878,11 @@ bool QWaylandWindow::windowEvent(QEvent *event)
     }
 
     return QPlatformWindow::windowEvent(event);
+}
+
+QSurfaceFormat QWaylandWindow::format() const
+{
+    return mSurfaceFormat;
 }
 
 }

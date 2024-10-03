@@ -28,6 +28,7 @@ qt_internal_add_module(WaylandClient
         qwaylandabstractdecoration.cpp qwaylandabstractdecoration_p.h
         qwaylandappmenu.cpp qwaylandappmenu_p.h
         qwaylandbuffer.cpp qwaylandbuffer_p.h
+        qwaylandcolormanagement.cpp qwaylandcolormanagement_p.h
         qwaylanddatacontrolv1.cpp qwaylanddatacontrolv1_p.h
         qwaylanddecorationfactory.cpp qwaylanddecorationfactory_p.h
         qwaylanddecorationplugin.cpp qwaylanddecorationplugin_p.h
@@ -121,6 +122,7 @@ qt6_generate_wayland_protocol_client_sources(WaylandClient
         ${CMAKE_CURRENT_SOURCE_DIR}/../extensions/touch-extension.xml
         ${CMAKE_CURRENT_SOURCE_DIR}/hardwareintegration/../../extensions/hardware-integration.xml
         ${CMAKE_CURRENT_SOURCE_DIR}/hardwareintegration/../../extensions/server-buffer-extension.xml
+        ${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/protocol/color-management/xx-color-management-v4.xml
 )
 
 #### Keys ignored in scope 1:.:.:client.pro:<TRUE>:

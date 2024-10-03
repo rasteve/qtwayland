@@ -22,7 +22,6 @@ namespace QtWaylandClient {
 QWaylandEglWindow::QWaylandEglWindow(QWindow *window, QWaylandDisplay *display)
     : QWaylandWindow(window, display)
     , m_clientBufferIntegration(static_cast<QWaylandEglClientBufferIntegration *>(mDisplay->clientBufferIntegration()))
-    , m_format(window->requestedFormat())
 {
     connect(display, &QWaylandDisplay::connected, this, [this] {
         m_clientBufferIntegration = static_cast<QWaylandEglClientBufferIntegration *>(
@@ -116,7 +115,7 @@ void QWaylandEglWindow::updateSurface(bool create)
             if (mDisplay->supportsWindowDecoration())
                 fmt.setAlphaBufferSize(8);
             EGLConfig eglConfig = q_configFromGLFormat(m_clientBufferIntegration->eglDisplay(), fmt);
-            m_format = q_glFormatFromConfig(m_clientBufferIntegration->eglDisplay(), eglConfig, fmt);
+            setFormat(q_glFormatFromConfig(m_clientBufferIntegration->eglDisplay(), eglConfig, fmt));
 
             EGLSurface eglSurface = eglCreateWindowSurface(m_clientBufferIntegration->eglDisplay(), eglConfig, (EGLNativeWindowType) eglWindow, 0);
             if (Q_UNLIKELY(eglSurface == EGL_NO_SURFACE)) {
@@ -137,11 +136,6 @@ QRect QWaylandEglWindow::contentsRect() const
     QRect r = geometry();
     QMargins m = clientSideMargins();
     return QRect(m.left(), m.bottom(), r.width(), r.height());
-}
-
-QSurfaceFormat QWaylandEglWindow::format() const
-{
-    return m_format;
 }
 
 void QWaylandEglWindow::invalidateSurface()

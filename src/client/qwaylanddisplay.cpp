@@ -45,6 +45,8 @@
 #endif
 #include "qwaylandqtkey_p.h"
 
+#include "qwaylandcolormanagement_p.h"
+
 #include <QtWaylandClient/private/qwayland-text-input-unstable-v1.h>
 #include <QtWaylandClient/private/qwayland-text-input-unstable-v2.h>
 #include <QtWaylandClient/private/qwayland-text-input-unstable-v3.h>
@@ -813,6 +815,10 @@ void QWaylandDisplay::registry_global(uint32_t id, const QString &interface, uin
             inputDevice->setDataControlDevice(mGlobals.dataControlManager->createDevice(inputDevice));
         }
 #endif
+    } else if (interface == QLatin1String(QtWayland::xx_color_manager_v4::interface()->name)) {
+        mGlobals.colorManager = std::make_unique<ColorManager>(registry, id, 1);
+        // we need a roundtrip to receive the features the compositor supports
+        forceRoundTrip();
     }
 
     mRegistryGlobals.append(RegistryGlobal(id, interface, version, registry));
