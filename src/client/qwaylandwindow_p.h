@@ -307,8 +307,6 @@ protected:
     bool mExposed = false;
 
     bool mWaitingToApplyConfigure = false;
-    bool mResizeDirty = false;
-    bool mResizeAfterSwap;
     int mFrameCallbackTimeout = 100;
     QVariantMap m_properties;
 

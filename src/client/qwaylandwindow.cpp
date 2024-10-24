@@ -51,7 +51,6 @@ QWaylandWindow::QWaylandWindow(QWindow *window, QWaylandDisplay *display)
     , mDisplay(display)
     , mSurfaceLock(QReadWriteLock::Recursive)
     , mShellIntegration(display->shellIntegration())
-    , mResizeAfterSwap(qEnvironmentVariableIsSet("QT_WAYLAND_RESIZE_AFTER_SWAP"))
 {
     {
         bool ok;
@@ -335,7 +334,6 @@ void QWaylandWindow::resetSurfaceRole()
     }
     mFrameCallbackTimedOut = false;
     mWaitingToApplyConfigure = false;
-    mResizeDirty = false;
     mExposed = false;
 }
 
@@ -463,9 +461,6 @@ void QWaylandWindow::setGeometry(const QRect &r)
         if (mWindowDecorationEnabled)
             mWindowDecoration->update();
 
-        if (mResizeAfterSwap && windowType() == Egl && mSentInitialResize) {
-            mResizeDirty = true;
-        }
         QWindowSystemInterface::handleGeometryChange<QWindowSystemInterface::SynchronousDelivery>(window(), geometry());
         mSentInitialResize = true;
     }
