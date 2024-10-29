@@ -366,6 +366,7 @@ private:
 
     static const wl_callback_listener callbackListener;
     void handleFrameCallback(struct ::wl_callback* callback);
+    const QPlatformWindow *lastParent = nullptr;
 
     static QWaylandWindow *mMouseGrab;
     static QWaylandWindow *mTopPopup;

@@ -99,6 +99,12 @@ void XdgSurface::xdg_surface_get_toplevel(Resource *resource, uint32_t id)
 {
     QVERIFY(!m_toplevel);
     QVERIFY(!m_popup);
+    if (!m_surface->m_role) {
+        m_surface->m_role = new XdgToplevelRole;
+    } else if (!qobject_cast<XdgToplevelRole *>(m_surface->m_role)) {
+        QFAIL(QByteArrayLiteral("surface already has role") + m_surface->m_role->metaObject()->className());
+        return;
+    }
     m_toplevel = new XdgToplevel(this, id, resource->version());
     emit toplevelCreated(m_toplevel);
 }
@@ -108,6 +114,12 @@ void XdgSurface::xdg_surface_get_popup(Resource *resource, uint32_t id, wl_resou
     Q_UNUSED(positioner);
     QVERIFY(!m_toplevel);
     QVERIFY(!m_popup);
+    if (!m_surface->m_role) {
+        m_surface->m_role = new SubSurfaceRole;
+    } else if (!qobject_cast<SubSurfaceRole *>(m_surface->m_role)) {
+        qWarning() << "surface already has role" << m_surface->m_role->metaObject()->className();
+        return;
+    }
     auto *p = fromResource<XdgSurface>(parent);
     m_popup = new XdgPopup(this, p, id, resource->version());
 }

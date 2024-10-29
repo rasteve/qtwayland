@@ -188,6 +188,11 @@ protected:
     void shell_get_shell_surface(Resource *resource, uint32_t id, ::wl_resource *surface) override;
 };
 
+class WlShellSurfaceRole : public SurfaceRole
+{
+    Q_OBJECT
+};
+
 class WlShellSurface : public QObject, public QtWaylandServer::wl_shell_surface
 {
     Q_OBJECT
@@ -203,15 +208,7 @@ public:
     Surface *m_surface = nullptr;
 };
 
-class Subsurface : public QObject, public QtWaylandServer::wl_subsurface
-{
-    Q_OBJECT
-public:
-    explicit Subsurface(wl_client *client, int id, int version)
-        : QtWaylandServer::wl_subsurface(client, id, version)
-    {
-    }
-};
+class Subsurface;
 
 class SubCompositor : public Global, public QtWaylandServer::wl_subcompositor
 {
@@ -226,14 +223,38 @@ signals:
     void subsurfaceCreated(Subsurface *subsurface);
 
 protected:
-    void subcompositor_get_subsurface(Resource *resource, uint32_t id, ::wl_resource *surface, ::wl_resource *parent) override
+    void subcompositor_get_subsurface(Resource *resource, uint32_t id,
+                                      ::wl_resource *surfaceResource,
+                                      ::wl_resource *parent) override;
+};
+
+class SubSurfaceRole : public SurfaceRole
+{
+    Q_OBJECT
+};
+
+class Subsurface : public QObject, public QtWaylandServer::wl_subsurface
+{
+    Q_OBJECT
+public:
+    explicit Subsurface(SubCompositor *subCompositor, wl_client *client, int id, int version)
+        : QtWaylandServer::wl_subsurface(client, id, version), m_subcompositor(subCompositor)
     {
-        QTRY_VERIFY(parent);
-        QTRY_VERIFY(surface);
-        auto *subsurface = new Subsurface(resource->client(), id, resource->version());
-        m_subsurfaces.append(subsurface); // TODO: clean up?
-        emit subsurfaceCreated(subsurface);
     }
+    ~Subsurface()
+    {
+        m_subcompositor->m_subsurfaces.removeOne(this);
+        qDebug() << m_subcompositor->m_subsurfaces;
+    }
+    void subsurface_destroy(Resource *resource) override { wl_resource_destroy(resource->handle); }
+    void subsurface_destroy_resource(Resource *resource) override
+    {
+        Q_UNUSED(resource)
+        delete this;
+    }
+
+private:
+    SubCompositor *m_subcompositor;
 };
 
 struct OutputMode {

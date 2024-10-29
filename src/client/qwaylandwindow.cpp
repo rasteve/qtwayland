@@ -354,21 +354,22 @@ WId QWaylandWindow::winId() const
 
 void QWaylandWindow::setParent(const QPlatformWindow *parent)
 {
-    if (!window()->isVisible())
-        return;
-
-    QWaylandWindow *oldparent = mSubSurfaceWindow ? mSubSurfaceWindow->parent() : nullptr;
-    if (oldparent == parent)
+    if (lastParent == parent)
         return;
 
     if (mSubSurfaceWindow && parent) { // new parent, but we were a subsurface already
         delete mSubSurfaceWindow;
         QWaylandWindow *p = const_cast<QWaylandWindow *>(static_cast<const QWaylandWindow *>(parent));
         mSubSurfaceWindow = new QWaylandSubSurface(this, p, mDisplay->createSubSurface(this, p));
-    } else { // we're changing role, need to make a new wl_surface
+    } else if ((!lastParent && parent) || (lastParent && !parent)) {
+        // we're changing role, need to make a new wl_surface
         reset();
-        initWindow();
+        initializeWlSurface();
+        if (window()->isVisible()) {
+            initWindow();
+        }
     }
+    lastParent = parent;
 }
 
 QString QWaylandWindow::windowTitle() const
