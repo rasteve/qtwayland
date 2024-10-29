@@ -681,6 +681,10 @@ void QWaylandInputDevice::Pointer::pointer_enter(uint32_t serial, struct wl_surf
     mParent->mSerial = serial;
     mEnterSerial = serial;
 
+    if (!mParent->mQDisplay->lastInputDevice()) {
+        mParent->mQDisplay->setLastInputDevice(mParent, serial, window);
+    }
+
 #if QT_CONFIG(cursor)
     // Depends on mEnterSerial being updated
     updateCursor();
