@@ -23,8 +23,6 @@ namespace QtWaylandClient {
 
 using namespace Qt::StringLiterals;
 
-Q_DECLARE_LOGGING_CATEGORY(lcQpaWaylandInput)
-
 #if QT_CONFIG(cursor)
 int QWaylandTabletToolV2::idealCursorScale() const
 {
