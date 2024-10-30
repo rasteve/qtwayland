@@ -12,7 +12,8 @@
 
 #include <QtGui/private/qguiapplication_p.h>
 #include <QtGui/private/qpointingdevice_p.h>
-#include <qpa/qplatformtheme.h>
+#include <QtGui/qpa/qplatformtheme.h>
+#include <QtGui/qpa/qwindowsysteminterface_p.h>
 
 #include <wayland-cursor.h>
 
@@ -22,7 +23,6 @@ namespace QtWaylandClient {
 
 using namespace Qt::StringLiterals;
 
-Q_LOGGING_CATEGORY(lcQpaInputDevices, "qt.qpa.input.devices")
 Q_DECLARE_LOGGING_CATEGORY(lcQpaWaylandInput)
 
 #if QT_CONFIG(cursor)
