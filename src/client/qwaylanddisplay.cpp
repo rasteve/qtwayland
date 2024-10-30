@@ -455,18 +455,21 @@ void QWaylandDisplay::reconnect()
     mActiveWindows.clear();
 
     const auto windows = QGuiApplication::allWindows();
+    QList<QWaylandWindow *> allPlatformWindows;
     for (auto window : windows) {
-        if (auto waylandWindow = static_cast<QWaylandWindow *>(window->handle()))
+        if (auto waylandWindow = static_cast<QWaylandWindow *>(window->handle())) {
             waylandWindow->closeChildPopups();
+            allPlatformWindows.push_back(waylandWindow);
+        }
     }
+
     // Remove windows that do not need to be recreated and now closed popups
     QList<QWaylandWindow *> recreateWindows;
-    for (auto window : std::as_const(windows)) {
-        auto waylandWindow = static_cast<QWaylandWindow*>(window->handle());
-        if (waylandWindow && waylandWindow->wlSurface()) {
-            waylandWindow->reset();
-            recreateWindows.push_back(waylandWindow);
+    for (auto window : std::as_const(allPlatformWindows)) {
+        if (window->subSurfaceWindow() || window->shellSurface()) {
+            recreateWindows.push_back(window);
         }
+        window->reset();
     }
 
     if (mSyncCallback) {
@@ -480,6 +483,15 @@ void QWaylandDisplay::reconnect()
     if (!mDisplay)
         _exit(1);
 
+    connect(
+            this, &QWaylandDisplay::connected, this,
+            [&allPlatformWindows] {
+                for (auto &window : std::as_const(allPlatformWindows)) {
+                    window->initializeWlSurface();
+                }
+            },
+            Qt::SingleShotConnection);
+
     setupConnection();
     initialize();
 
@@ -488,7 +500,8 @@ void QWaylandDisplay::reconnect()
     initEventThread();
 
     auto needsRecreate = [](QPlatformWindow *window) {
-        return window && !static_cast<QWaylandWindow *>(window)->wlSurface();
+        auto waylandWindow = static_cast<QWaylandWindow *>(window);
+        return waylandWindow && !waylandWindow->subSurfaceWindow() && !waylandWindow->shellSurface();
     };
     auto window = recreateWindows.begin();
     while (!recreateWindows.isEmpty()) {

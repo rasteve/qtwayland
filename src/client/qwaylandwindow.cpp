@@ -1803,7 +1803,6 @@ void QWaylandWindow::closeChildPopups() {
 
 void QWaylandWindow::reinit()
 {
-    initializeWlSurface();
     if (window()->isVisible()) {
         initWindow();
         if (hasPendingUpdateRequest())

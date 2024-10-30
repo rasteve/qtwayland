@@ -239,6 +239,7 @@ public:
 
     virtual void reinit();
     void reset();
+    void initializeWlSurface();
 
     bool windowEvent(QEvent *event) override;
 
@@ -340,7 +341,6 @@ protected:
 private:
     void setGeometry_helper(const QRect &rect);
     void initWindow();
-    void initializeWlSurface();
     bool shouldCreateShellSurface() const;
     bool shouldCreateSubSurface() const;
     void resetSurfaceRole();
