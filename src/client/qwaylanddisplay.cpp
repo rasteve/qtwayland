@@ -190,7 +190,7 @@ protected:
 
             if (fds[0].revents & POLLIN)
                 wl_display_read_events(m_wldisplay);
-                // The polll was succesfull and the event thread did the wl_display_read_events(). On the next iteration of the loop
+                // The poll was succesfull and the event thread did the wl_display_read_events(). On the next iteration of the loop
                 // the event sent to the main thread will cause it to dispatch the messages just read, unless the loop exits in which
                 // case we don't care anymore about them.
             else
