@@ -588,6 +588,10 @@ bool QWaylandXdgSurface::requestActivateOnShow()
     if (type == Qt::ToolTip || type == Qt::Popup || type == Qt::SplashScreen)
         return false;
 
+    const Qt::WindowFlags flags = m_window->window()->flags();
+    if (flags & Qt::WindowDoesNotAcceptFocus)
+        return false;
+
     if (m_window->window()->property("_q_showWithoutActivating").toBool())
         return false;
 
