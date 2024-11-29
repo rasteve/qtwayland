@@ -96,8 +96,9 @@ void QWaylandDataControlDeviceV1::zwlr_data_control_device_v1_data_offer(zwlr_da
 void QWaylandDataControlDeviceV1::zwlr_data_control_device_v1_selection(zwlr_data_control_offer_v1 *id)
 {
     if (!id)
-        return;
-    m_selectionOffer.reset(static_cast<QWaylandDataControlOfferV1 *>(zwlr_data_control_offer_v1_get_user_data(id)));
+        m_selectionOffer.reset();
+    else
+        m_selectionOffer.reset(static_cast<QWaylandDataControlOfferV1 *>(zwlr_data_control_offer_v1_get_user_data(id)));
 
     // The selection event may be sent before platfrmIntegration is set.
     if (auto* integration = QGuiApplicationPrivate::platformIntegration())
@@ -114,8 +115,9 @@ void QWaylandDataControlDeviceV1::zwlr_data_control_device_v1_finished()
 void QWaylandDataControlDeviceV1::zwlr_data_control_device_v1_primary_selection(struct ::zwlr_data_control_offer_v1 *id)
 {
     if (!id)
-        return;
-    m_primarySelectionOffer.reset(static_cast<QWaylandDataControlOfferV1 *>(zwlr_data_control_offer_v1_get_user_data(id)));
+        m_primarySelectionOffer.reset();
+    else
+        m_primarySelectionOffer.reset(static_cast<QWaylandDataControlOfferV1 *>(zwlr_data_control_offer_v1_get_user_data(id)));
 
     // The selection event may be sent before platfrmIntegration is set.
     if (auto* integration = QGuiApplicationPrivate::platformIntegration())
