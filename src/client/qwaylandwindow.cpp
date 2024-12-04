@@ -740,7 +740,8 @@ void QWaylandWindow::commit(QWaylandBuffer *buffer, const QRegion &damage)
 {
     Q_ASSERT(isExposed());
     if (buffer->committed()) {
-        qCDebug(lcWaylandBackingstore) << "Buffer already committed, ignoring.";
+        mSurface->commit();
+        qCDebug(lcWaylandBackingstore) << "Buffer already committed, not attaching.";
         return;
     }
 
