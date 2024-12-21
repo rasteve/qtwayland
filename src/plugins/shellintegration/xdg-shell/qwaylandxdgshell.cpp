@@ -603,11 +603,8 @@ void QWaylandXdgSurface::requestXdgActivationToken(quint32 serial)
     if (auto *activation = m_shell->activation()) {
         auto tokenProvider = activation->requestXdgActivationToken(
                 m_shell->m_display, m_window->wlSurface(), serial, m_appId);
-        connect(tokenProvider, &QWaylandXdgActivationTokenV1::done, this,
-                [this, tokenProvider](const QString &token) {
-                    Q_EMIT m_window->xdgActivationTokenCreated(token);
-                    tokenProvider->deleteLater();
-                });
+        connect(tokenProvider, &QWaylandXdgActivationTokenV1::done, m_window, &QWaylandWindow::xdgActivationTokenCreated);
+        connect(tokenProvider, &QWaylandXdgActivationTokenV1::done, tokenProvider, &QObject::deleteLater);
     } else {
         QWaylandShellSurface::requestXdgActivationToken(serial);
     }
@@ -639,10 +636,10 @@ void QWaylandXdgSurface::setAlertState(bool enabled)
     const auto tokenProvider = activation->requestXdgActivationToken(
             m_shell->m_display, m_window->wlSurface(), std::nullopt, m_appId);
     connect(tokenProvider, &QWaylandXdgActivationTokenV1::done, this,
-            [this, tokenProvider](const QString &token) {
+            [this](const QString &token) {
                 m_shell->activation()->activate(token, m_window->wlSurface());
-                tokenProvider->deleteLater();
             });
+    connect(tokenProvider, &QWaylandXdgActivationTokenV1::done, tokenProvider, &QObject::deleteLater);
 }
 
 QString QWaylandXdgSurface::externWindowHandle()
