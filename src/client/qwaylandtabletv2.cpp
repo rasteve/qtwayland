@@ -550,8 +550,8 @@ void QWaylandTabletToolV2::zwp_tablet_tool_v2_frame(uint32_t time)
         Qt::MouseButtons buttons = m_pending.down ? Qt::MouseButton::LeftButton : Qt::MouseButton::NoButton;
         buttons |= m_pending.buttons;
         qreal pressure = m_pending.pressure;
-        int xTilt = int(m_pending.xTilt);
-        int yTilt = int(m_pending.yTilt);
+        qreal xTilt = m_pending.xTilt;
+        qreal yTilt = m_pending.yTilt;
         qreal tangentialPressure = m_pending.slider;
         qreal rotation = m_pending.rotation;
         int z = int(m_pending.distance);
