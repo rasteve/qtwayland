@@ -60,19 +60,20 @@ QWaylandShmBuffer::QWaylandShmBuffer(QWaylandDisplay *display,
 #endif
 
     QScopedPointer<QFile> filePointer;
+    bool opened;
 
     if (fd == -1) {
         auto tmpFile = new QTemporaryFile (QStandardPaths::writableLocation(QStandardPaths::RuntimeLocation) +
                                        QLatin1String("/wayland-shm-XXXXXX"));
-        tmpFile->open();
+        opened = tmpFile->open();
         filePointer.reset(tmpFile);
     } else {
         auto file = new QFile;
-        file->open(fd, QIODevice::ReadWrite | QIODevice::Unbuffered, QFile::AutoCloseHandle);
+        opened = file->open(fd, QIODevice::ReadWrite | QIODevice::Unbuffered, QFile::AutoCloseHandle);
         filePointer.reset(file);
     }
     // NOTE beginPaint assumes a new buffer be all zeroes, which QFile::resize does.
-    if (!filePointer->isOpen() || !filePointer->resize(alloc)) {
+    if (!opened || !filePointer->resize(alloc)) {
         qWarning("QWaylandShmBuffer: failed: %s", qUtf8Printable(filePointer->errorString()));
         return;
     }
