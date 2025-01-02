@@ -22,8 +22,6 @@
 #include <qpa/qplatformwindow.h>
 #include <QMutex>
 
-#include <list>
-
 QT_BEGIN_NAMESPACE
 
 namespace QtWaylandClient {
@@ -44,12 +42,17 @@ public:
     QImage *imageInsideMargins(const QMargins &margins);
 
     QRegion &dirtyRegion() { return mDirtyRegion; }
+
+    uint age() const { return mAge; }
+    void setAge(uint age) { mAge = age; }
+
 private:
     QImage mImage;
     struct wl_shm_pool *mShmPool = nullptr;
     QMargins mMargins;
     QImage *mMarginsImage = nullptr;
     QRegion mDirtyRegion;
+    uint mAge = 0;
 };
 
 class Q_WAYLANDCLIENT_EXPORT QWaylandShmBackingStore : public QPlatformBackingStore
@@ -84,7 +87,7 @@ private:
     QWaylandShmBuffer *getBuffer(const QSize &size, bool &bufferWasRecreated);
 
     QWaylandDisplay *mDisplay = nullptr;
-    std::list<QWaylandShmBuffer *> mBuffers;
+    QList<QWaylandShmBuffer *> mBuffers;
     QWaylandShmBuffer *mFrontBuffer = nullptr;
     QWaylandShmBuffer *mBackBuffer = nullptr;
     bool mPainting = false;

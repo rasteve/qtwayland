@@ -255,23 +255,33 @@ void QWaylandShmBackingStore::resize(const QSize &size, const QRegion &)
 
 QWaylandShmBuffer *QWaylandShmBackingStore::getBuffer(const QSize &size, bool &bufferWasRecreated)
 {
+    static const int MAX_BUFFERS = 5;
+    static const int MAX_AGE = 10 * MAX_BUFFERS;
     bufferWasRecreated = false;
 
-    const auto copy = mBuffers; // remove when ported to vector<unique_ptr> + remove_if
-    for (QWaylandShmBuffer *b : copy) {
-        if (!b->busy()) {
-            if (b->size() == size) {
-                return b;
-            } else {
-                mBuffers.remove(b);
-                if (mBackBuffer == b)
-                    mBackBuffer = nullptr;
-                delete b;
-            }
+    // Prune buffers that have not been used in a while or with different size.
+    for (auto i = mBuffers.size() - 1; i >= 0; --i) {
+        QWaylandShmBuffer *buffer = mBuffers[i];
+        if (buffer->age() > MAX_AGE || buffer->size() != size) {
+            mBuffers.removeAt(i);
+            if (mBackBuffer == buffer)
+                mBackBuffer = nullptr;
+            delete buffer;
         }
     }
 
-    static const size_t MAX_BUFFERS = 5;
+    QWaylandShmBuffer *buffer = nullptr;
+    for (QWaylandShmBuffer *candidate : std::as_const(mBuffers)) {
+        if (candidate->busy())
+            continue;
+
+        if (!buffer || candidate->age() < buffer->age())
+            buffer = candidate;
+    }
+
+    if (buffer)
+        return buffer;
+
     if (mBuffers.size() < MAX_BUFFERS) {
         QImage::Format format = QPlatformScreen::platformScreenForWindow(window())->format();
         QWaylandShmBuffer *b = new QWaylandShmBuffer(mDisplay, size, format, waylandWindow()->scale());
@@ -327,11 +337,12 @@ bool QWaylandShmBackingStore::recreateBackBufferIfNeeded()
 
     mBackBuffer = buffer;
 
-    // ensure the new buffer is at the beginning of the list so next time getBuffer() will pick
-    // it if possible
-    if (mBuffers.front() != buffer) {
-        mBuffers.remove(buffer);
-        mBuffers.push_front(buffer);
+    for (QWaylandShmBuffer *buffer : std::as_const(mBuffers)) {
+        if (mBackBuffer == buffer) {
+            buffer->setAge(0);
+        } else {
+            buffer->setAge(buffer->age() + 1);
+        }
     }
 
     if (windowDecoration() && window()->isVisible() && oldSizeInBytes != newSizeInBytes)
