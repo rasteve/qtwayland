@@ -55,7 +55,9 @@ public:
 };
 
 template <typename T>
-class Q_WAYLANDCLIENT_EXPORT QWaylandShellIntegrationTemplate : public QWaylandShellIntegration, public QWaylandClientExtension
+class Q_WAYLANDCLIENT_EXPORT QWaylandShellIntegrationTemplate
+    : public QWaylandClientExtension,
+      public QWaylandShellIntegration
 {
 public:
     QWaylandShellIntegrationTemplate(const int ver) :
