@@ -40,7 +40,7 @@ class Q_WAYLANDCLIENT_EXPORT QWaylandShellIntegration
 {
 public:
     QWaylandShellIntegration() {}
-    virtual ~QWaylandShellIntegration() {}
+    virtual ~QWaylandShellIntegration();
 
     virtual bool initialize(QWaylandDisplay *display) = 0;
     virtual QWaylandShellSurface *createShellSurface(QWaylandWindow *window) = 0;
