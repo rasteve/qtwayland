@@ -186,4 +186,4 @@ qt_internal_add_docs(WaylandClient
 )
 
 qt_record_extra_qt_main_tools_package_dependency(WaylandClient WaylandScannerTools "${PROJECT_VERSION}")
-qt_record_extra_qt_package_dependency(WaylandClient WaylandGlobalPrivate "${PROJECT_VERSION}")
+qt_internal_register_target_dependencies(WaylandClient PUBLIC Qt6::WaylandGlobalPrivate)
