@@ -79,7 +79,7 @@ void QWaylandXdgToplevelIconManagerV1::setIcon(const QIcon &icon, xdg_toplevel *
     QList<QSize> iconSizes = icon.availableSizes();
     // if icon has no default size (an SVG)
     if (iconSizes.isEmpty()) {
-        iconSizes.resize(mPreferredSizes.size());
+        iconSizes.reserve(mPreferredSizes.size());
         for (int size : std::as_const(mPreferredSizes)) {
             iconSizes.append(QSize(size, size));
         }
