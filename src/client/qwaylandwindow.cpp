@@ -1065,7 +1065,7 @@ bool QWaylandWindow::createDecoration()
             }
 
             if (targetKey.isEmpty()) {
-                auto unixServices = dynamic_cast<QGenericUnixServices *>(
+                auto unixServices = dynamic_cast<QDesktopUnixServices *>(
                     QGuiApplicationPrivate::platformIntegration()->services());
                 const QList<QByteArray> desktopNames = unixServices->desktopEnvironment().split(':');
                 if (desktopNames.contains("GNOME")) {

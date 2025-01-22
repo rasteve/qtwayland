@@ -26,7 +26,7 @@ bool QWaylandPlatformServices::openUrl(const QUrl &url)
         windowManagerIntegration->openUrl(url);
         return true;
     }
-    return QGenericUnixServices::openUrl(url);
+    return QDesktopUnixServices::openUrl(url);
 }
 
 bool QWaylandPlatformServices::openDocument(const QUrl &url)
@@ -35,7 +35,7 @@ bool QWaylandPlatformServices::openDocument(const QUrl &url)
         windowManagerIntegration->openUrl(url);
         return true;
     }
-    return QGenericUnixServices::openDocument(url);
+    return QDesktopUnixServices::openDocument(url);
 }
 
 QString QWaylandPlatformServices::portalWindowIdentifier(QWindow *window)

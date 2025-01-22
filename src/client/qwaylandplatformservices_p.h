@@ -16,7 +16,7 @@
 //
 
 #include <QtCore/QMap>
-#include <QtGui/private/qgenericunixservices_p.h>
+#include <QtGui/private/qdesktopunixservices_p.h>
 
 #include <QtWaylandClient/private/qwayland-qt-windowmanager.h>
 #include <QtWaylandClient/qtwaylandclientglobal.h>
@@ -29,7 +29,7 @@ class QWaylandAppMenu;
 class QWaylandDisplay;
 class QWaylandWindow;
 
-class Q_WAYLANDCLIENT_EXPORT QWaylandPlatformServices : public QGenericUnixServices
+class Q_WAYLANDCLIENT_EXPORT QWaylandPlatformServices : public QDesktopUnixServices
 {
 public:
     explicit QWaylandPlatformServices(QWaylandDisplay *waylandDisplay);
