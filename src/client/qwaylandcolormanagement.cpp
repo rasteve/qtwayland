@@ -86,7 +86,7 @@ std::unique_ptr<ImageDescription> ColorManager::createImageDescription(const QCo
     const auto primary = std::find_if(primaryMapping.begin(), primaryMapping.end(), [&colorspace](const auto &pair) {
         return pair.first == colorspace.primaries();
     });
-    if (!(supportedFeatures() & Feature::SetPrimaries) && (primary != primaryMapping.end() || !supportsNamedPrimary(primary->second)))
+    if (!(supportedFeatures() & Feature::SetPrimaries) && (primary == primaryMapping.end() || !supportsNamedPrimary(primary->second)))
         return nullptr;
 
     constexpr std::array tfMapping = {
