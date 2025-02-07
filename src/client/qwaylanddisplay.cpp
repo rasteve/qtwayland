@@ -43,7 +43,6 @@
 #if QT_CONFIG(tabletevent)
 #include "qwaylandtabletv2_p.h"
 #endif
-#include "qwaylandqtkey_p.h"
 
 #include "qwaylandcolormanagement_p.h"
 
@@ -671,8 +670,6 @@ void QWaylandDisplay::registry_global(uint32_t id, const QString &interface, uin
                                                                                           id, 1));
     } else if (interface == QLatin1String(QWaylandTouchExtension::interface()->name)) {
         mGlobals.touchExtension.reset(new QWaylandTouchExtension(this, id));
-    } else if (interface == QLatin1String(QWaylandQtKeyExtension::interface()->name)) {
-        mGlobals.qtKeyExtension.reset(new QWaylandQtKeyExtension(this, id));
 #if QT_CONFIG(tabletevent)
     } else if (interface == QLatin1String(QWaylandTabletManagerV2::interface()->name)) {
         mGlobals.tabletManager.reset(new QWaylandTabletManagerV2(this, id, qMin(1, int(version))));

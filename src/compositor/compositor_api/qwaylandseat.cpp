@@ -21,7 +21,6 @@
 #endif
 #include <QtWaylandCompositor/private/qwaylandutils_p.h>
 
-#include "extensions/qwlqtkey_p.h"
 #include "extensions/qwaylandtextinput.h"
 #include "extensions/qwaylandtextinputv3.h"
 #include "extensions/qwaylandqttextinputmethod.h"
@@ -482,10 +481,6 @@ void QWaylandSeat::sendFullKeyEvent(QKeyEvent *event)
         }
     }
 #endif
-
-    QtWayland::QtKeyExtensionGlobal *ext = QtWayland::QtKeyExtensionGlobal::findIn(d->compositor);
-    if (ext && ext->postQtKeyEvent(event, keyboardFocus()))
-        return;
 
     if (!d->keyboard.isNull() && !event->isAutoRepeat()) {
 

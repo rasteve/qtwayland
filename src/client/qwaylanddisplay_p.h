@@ -83,7 +83,6 @@ class QWaylandTabletManagerV2;
 #endif
 class QWaylandPointerGestures;
 class QWaylandTouchExtension;
-class QWaylandQtKeyExtension;
 class QWaylandWindow;
 class QWaylandIntegration;
 class QWaylandHardwareIntegration;
@@ -344,7 +343,6 @@ private:
 #endif
         std::unique_ptr<QtWayland::wl_subcompositor> subCompositor;
         std::unique_ptr<QWaylandTouchExtension> touchExtension;
-        std::unique_ptr<QWaylandQtKeyExtension> qtKeyExtension;
 #if QT_CONFIG(tabletevent)
         std::unique_ptr<QWaylandTabletManagerV2> tabletManager;
 #endif

@@ -6,7 +6,6 @@ private_headers.CONFIG += no_check_exist
 
 WAYLANDSERVERSOURCES += \
     ../extensions/touch-extension.xml \
-    ../extensions/qt-key-unstable-v1.xml \
     ../extensions/qt-windowmanager.xml \
     ../extensions/qt-text-input-method-unstable-v1.xml \
     ../3rdparty/protocol/text-input/text-input-unstable-v2.xml \
@@ -22,7 +21,6 @@ WAYLANDSERVERSOURCES += \
 
 HEADERS += \
     extensions/qwlqttouch_p.h \
-    extensions/qwlqtkey_p.h \
     extensions/qwaylandshell.h \
     extensions/qwaylandshell_p.h \
     extensions/qwaylandwlshell.h \
@@ -55,7 +53,6 @@ HEADERS += \
 
 SOURCES += \
     extensions/qwlqttouch.cpp \
-    extensions/qwlqtkey.cpp \
     extensions/qwaylandshell.cpp \
     extensions/qwaylandwlshell.cpp \
     extensions/qwaylandtextinput.cpp \
