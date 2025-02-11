@@ -39,7 +39,6 @@
 
 #include "qwaylandpointergestures_p.h"
 #include "qwaylandsubsurface_p.h"
-#include "qwaylandtouch_p.h"
 #if QT_CONFIG(tabletevent)
 #include "qwaylandtabletv2_p.h"
 #endif
@@ -668,8 +667,6 @@ void QWaylandDisplay::registry_global(uint32_t id, const QString &interface, uin
         mGlobals.subCompositor.reset(
                 new WithDestructor<QtWayland::wl_subcompositor, wl_subcompositor_destroy>(registry,
                                                                                           id, 1));
-    } else if (interface == QLatin1String(QWaylandTouchExtension::interface()->name)) {
-        mGlobals.touchExtension.reset(new QWaylandTouchExtension(this, id));
 #if QT_CONFIG(tabletevent)
     } else if (interface == QLatin1String(QWaylandTabletManagerV2::interface()->name)) {
         mGlobals.tabletManager.reset(new QWaylandTabletManagerV2(this, id, qMin(1, int(version))));

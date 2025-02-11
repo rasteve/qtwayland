@@ -52,7 +52,6 @@ qt_internal_add_module(WaylandClient
         qwaylandshmwindow.cpp qwaylandshmwindow_p.h
         qwaylandsubsurface.cpp qwaylandsubsurface_p.h
         qwaylandsurface.cpp qwaylandsurface_p.h
-        qwaylandtouch.cpp qwaylandtouch_p.h
         qwaylandviewport.cpp qwaylandviewport_p.h
         qwaylandwindow.cpp qwaylandwindow_p.h
         qwaylandwindowmanagerintegration.cpp qwaylandwindowmanagerintegration_p.h
@@ -117,7 +116,6 @@ qt6_generate_wayland_protocol_client_sources(WaylandClient
         ${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/protocol/xdg-toplevel-drag/xdg-toplevel-drag-v1.xml
         ${CMAKE_CURRENT_SOURCE_DIR}/../extensions/qt-text-input-method-unstable-v1.xml
         ${CMAKE_CURRENT_SOURCE_DIR}/../extensions/qt-windowmanager.xml
-        ${CMAKE_CURRENT_SOURCE_DIR}/../extensions/touch-extension.xml
         ${CMAKE_CURRENT_SOURCE_DIR}/hardwareintegration/../../extensions/hardware-integration.xml
         ${CMAKE_CURRENT_SOURCE_DIR}/hardwareintegration/../../extensions/server-buffer-extension.xml
         ${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/protocol/color-management/xx-color-management-v4.xml

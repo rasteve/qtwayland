@@ -82,7 +82,6 @@ class QWaylandPrimarySelectionDeviceManagerV1;
 class QWaylandTabletManagerV2;
 #endif
 class QWaylandPointerGestures;
-class QWaylandTouchExtension;
 class QWaylandWindow;
 class QWaylandIntegration;
 class QWaylandHardwareIntegration;
@@ -173,10 +172,6 @@ public:
     QWaylandPointerGestures *pointerGestures() const
     {
         return mGlobals.pointerGestures.get();
-    }
-    QWaylandTouchExtension *touchExtension() const
-    {
-        return mGlobals.touchExtension.get();
     }
     QtWayland::qt_text_input_method_manager_v1 *textInputMethodManager() const
     {
@@ -342,7 +337,6 @@ private:
         std::unique_ptr<QWaylandDataDeviceManager> dndSelectionHandler;
 #endif
         std::unique_ptr<QtWayland::wl_subcompositor> subCompositor;
-        std::unique_ptr<QWaylandTouchExtension> touchExtension;
 #if QT_CONFIG(tabletevent)
         std::unique_ptr<QWaylandTabletManagerV2> tabletManager;
 #endif

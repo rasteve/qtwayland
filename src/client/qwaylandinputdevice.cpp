@@ -23,7 +23,6 @@
 #include "qwaylandtabletv2_p.h"
 #endif
 #include "qwaylandpointergestures_p.h"
-#include "qwaylandtouch_p.h"
 #include "qwaylandscreen_p.h"
 #include "qwaylandcursor_p.h"
 #include "qwaylanddisplay_p.h"
@@ -1456,10 +1455,6 @@ void QWaylandInputDevice::Touch::touch_motion(uint32_t time, int32_t id, wl_fixe
 void QWaylandInputDevice::Touch::touch_cancel()
 {
     mPendingTouchPoints.clear();
-
-    QWaylandTouchExtension *touchExt = mParent->mQDisplay->touchExtension();
-    if (touchExt)
-        touchExt->touchCanceled();
 
     mFocus = nullptr;
     QWindowSystemInterface::handleTouchCancelEvent(nullptr, mParent->mTouchDevice);

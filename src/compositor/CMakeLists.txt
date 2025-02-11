@@ -47,7 +47,6 @@ qt_internal_add_module(WaylandCompositor
         extensions/qwaylandxdgoutputv1.cpp extensions/qwaylandxdgoutputv1.h extensions/qwaylandxdgoutputv1_p.h
         extensions/qwaylandxdgshell.cpp extensions/qwaylandxdgshell.h extensions/qwaylandxdgshell_p.h
         extensions/qwaylandxdgdialogv1.cpp extensions/qwaylandxdgdialogv1_p.h
-        extensions/qwlqttouch.cpp extensions/qwlqttouch_p.h
         global/qtwaylandcompositorglobal.h global/qtwaylandcompositorglobal_p.h
         global/qtwaylandqmlinclude.h
         global/qwaylandcompositorextension.cpp global/qwaylandcompositorextension.h global/qwaylandcompositorextension_p.h
@@ -142,7 +141,6 @@ qt6_generate_wayland_protocol_server_sources(WaylandCompositor
         ${CMAKE_CURRENT_SOURCE_DIR}/../extensions/qt-texture-sharing-unstable-v1.xml
         ${CMAKE_CURRENT_SOURCE_DIR}/../extensions/qt-windowmanager.xml
         ${CMAKE_CURRENT_SOURCE_DIR}/../extensions/server-buffer-extension.xml
-        ${CMAKE_CURRENT_SOURCE_DIR}/../extensions/touch-extension.xml
 )
 
 #### Keys ignored in scope 1:.:.:compositor.pro:<TRUE>:
