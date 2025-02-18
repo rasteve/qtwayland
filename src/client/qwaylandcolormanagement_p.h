@@ -89,6 +89,7 @@ public:
 
 private:
     void xx_image_description_info_v4_done() override;
+    void xx_image_description_info_v4_icc_file(int32_t icc, uint32_t icc_size) override;
     void xx_image_description_info_v4_primaries(int32_t r_x, int32_t r_y, int32_t g_x, int32_t g_y, int32_t b_x, int32_t b_y, int32_t w_x, int32_t w_y) override;
     void xx_image_description_info_v4_tf_named(uint32_t transferFunction) override;
     void xx_image_description_info_v4_luminances(uint32_t min_lum, uint32_t max_lum, uint32_t reference_lum) override;

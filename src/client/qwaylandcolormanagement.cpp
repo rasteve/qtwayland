@@ -6,6 +6,8 @@
 
 #include <QDebug>
 
+#include <unistd.h>
+
 QT_BEGIN_NAMESPACE
 
 namespace QtWaylandClient {
@@ -144,6 +146,12 @@ ImageDescriptionInfo::~ImageDescriptionInfo()
 void ImageDescriptionInfo::xx_image_description_info_v4_done()
 {
     Q_EMIT done();
+}
+
+void ImageDescriptionInfo::xx_image_description_info_v4_icc_file(int32_t icc, uint32_t icc_size)
+{
+    Q_UNUSED(icc_size)
+    close(icc);
 }
 
 void ImageDescriptionInfo::xx_image_description_info_v4_primaries(int32_t r_x, int32_t r_y, int32_t g_x, int32_t g_y, int32_t b_x, int32_t b_y, int32_t w_x, int32_t w_y)
