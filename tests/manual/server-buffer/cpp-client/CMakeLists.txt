@@ -23,6 +23,7 @@ qt6_generate_wayland_protocol_client_sources(server-buffer-cpp-client
     PRIVATE_CODE
     FILES
         ${CMAKE_CURRENT_SOURCE_DIR}/../share-buffer.xml
+        ${CMAKE_CURRENT_SOURCE_DIR}/../../../../src/extensions/server-buffer-extension.xml
 )
 
 set_target_properties(server-buffer-cpp-client PROPERTIES
